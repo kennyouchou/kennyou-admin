@@ -11,7 +11,7 @@ export default defineConfig({
   },
   server:{
     proxy: {
-      // 选项写法
+      // 解除跨域写法
       '/api': {
         target: 'http://ceshi13.dishait.cn',
         changeOrigin: true,

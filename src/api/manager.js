@@ -1,6 +1,6 @@
-import axios from '@/axios.js'
+import axios from '@/axios'
 
-export function login(){
+export function login(username,password){
   return axios.post(
     '/admin/login',
     {
@@ -8,4 +8,9 @@ export function login(){
       password
     }
   )
+}
+
+export function getInfo() {
+    // 请求拦截器已经自动加token了 这里没必要传了
+    return axios.post("/admin/getinfo")
 }

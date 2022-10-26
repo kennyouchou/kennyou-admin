@@ -39,17 +39,26 @@
         </el-form-item>
         <!-- 登录按钮 -->
         <el-form-item>
-          <el-button type="primary" @click="onSubmit" color="#626aef" round class="w-[250px]">登 录</el-button>
+          <el-button type="primary" 
+          :loading="loading"
+          @click="onSubmit" color="#626aef" round class="w-[250px]">登 录</el-button>
         </el-form-item>
       </el-form>
     </el-col>
   </el-row>
 </template>
 <script setup>
-import { ref , reactive } from 'vue'
-import { login } from '@/api/manager'
+import { ref, reactive } from 'vue'
+import { login , getInfo } from '@/api/manager'
+import { ElNotification } from 'element-plus'
+import { useRouter } from 'vue-router'
+import { useCookies } from '@vueuse/integrations/useCookies'
 // import { User,Lock } from '@element-plus/icons-vue'
 // do not use same name with ref
+
+
+const router = useRouter()
+
 const form = reactive({
   username: '',
   password: ''
@@ -57,39 +66,61 @@ const form = reactive({
 
 const rules = {
   username: [
-    { 
-      required: true, 
-      message: '警告，用户名不能为空', 
+    {
+      required: true,
+      message: '警告，用户名不能为空',
       trigger: 'blur' //失去焦点时
-    },
-    { 
-      min: 3, 
-      max: 5, 
-      message: '用户名长度必须是3到5个字符', 
-      trigger: 'blur' 
     },
   ],
   password: [
-    {  
-      required: true, 
-      message: '警告，密码不能为空', 
+    {
+      required: true,
+      message: '警告，密码不能为空',
       trigger: 'blur' //失去焦点时
     },
   ]
 }
 const formRef = ref(null)
-
+const loading = ref(false)
+// 表单验证 需要向服务器传入用户名和密码
 const onSubmit = () => {
+  // validate对整个表单的内容进行验证。 接收一个回调函数，或返回 Promise
   formRef.value.validate((valid) => {
-    if(!valid){
+    if (!valid) {
       return false
     }
-    login(form.username,form.password).then(res=>{
+    loading.value = true
+    login(form.username, form.password)
+    .then(res => {
       console.log(res);
-    }).catch(err=>{
-      //拿到具体报错信息
-      console.log(err.response.data.msg);
-    })
+      // 提示成功信息
+      ElNotification({
+        type: 'success',
+        message: '恭喜！登陆成功!' || '登录失败',
+        duration: 3000
+      })
+      // 需要存储用户token和用户信息
+      const cookie = useCookies()
+      // 将token存到cookie中 直接res.token 在拦截器中已经优化
+      cookie.set("admin-token",res.token)
+
+      // 获取用户信息
+      getInfo().then(res2 => {
+        console.log(res2);
+      })
+      // 跳转到后台首页
+      router.push('/')
+     }).finally(()=>{
+        loading.value = false
+     })
+    // .catch(err => {
+    //   //拿到具体报错信息,并通知 已放到拦截器里
+    //   // ElNotification({
+    //   //   type: 'error',
+    //   //   message: err.response.data.msg || '请求失败',
+    //   //   duration: 3000
+    //   // })
+    // })
   })
 }
 
