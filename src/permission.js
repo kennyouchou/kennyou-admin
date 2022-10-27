@@ -24,6 +24,10 @@ router.beforeEach(async (to,from,next) => {
     if(token){
       await store.dispatch("actionGetInFo")
     }
+
+    // 设置页面标题
+    let title = (to.meta.title ? to.meta.title : "") + "--kennyouchou"
+    document.title = title
     next()
 })
 

@@ -1,11 +1,11 @@
 <template>
-  <div class="home">
-    <h2>后台首页</h2>
-    {{ $store.state.user.username }}
+  <div class="标签导航">
+    <h2>标签导航</h2>
   </div>
 </template>
 
 <script setup>
+
 </script>
 
 <style lang="less" scoped>
