@@ -1,10 +1,12 @@
 import router from '@/router'
 import { getToken } from "@/composables/auth"
-import { toast } from "@/composables/utils"
+import { toast,showLoading,hideLoading } from "@/composables/utils"
 import store from './store'
-// 全局前置守卫
+// 全局前置路由守卫
 
 router.beforeEach(async (to,from,next) => {
+    // 显示loading
+    showLoading()
     const token = getToken()
 
     // 没有登录，强制跳转回登录页
@@ -23,4 +25,8 @@ router.beforeEach(async (to,from,next) => {
       await store.dispatch("actionGetInFo")
     }
     next()
+})
+
+router.afterEach((to,from)=>{
+    hideLoading()
 })

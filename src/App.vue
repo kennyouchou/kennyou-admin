@@ -8,4 +8,8 @@
 </template>
 
 <style scoped>
+#nprogress .bar{
+  background-color: midnightblue !important;
+  height: 3px !important;
+}
 </style>
