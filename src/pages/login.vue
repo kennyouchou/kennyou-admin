@@ -48,15 +48,15 @@
   </el-row>
 </template>
 <script setup>
-import { ref, reactive } from 'vue'
-import { login , getInfo } from '@/api/manager'
-import { ElNotification } from 'element-plus'
+import { ref, reactive,onMounted,onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useCookies } from '@vueuse/integrations/useCookies'
+import { toast } from '@/composables/utils.js'
+import { useStore } from "vuex";
+
 // import { User,Lock } from '@element-plus/icons-vue'
 // do not use same name with ref
 
-
+const store = useStore()
 const router = useRouter()
 
 const form = reactive({
@@ -90,40 +90,28 @@ const onSubmit = () => {
       return false
     }
     loading.value = true
-    login(form.username, form.password)
-    .then(res => {
-      console.log(res);
-      // 提示成功信息
-      ElNotification({
-        type: 'success',
-        message: '恭喜！登陆成功!' || '登录失败',
-        duration: 3000
-      })
-      // 需要存储用户token和用户信息
-      const cookie = useCookies()
-      // 将token存到cookie中 直接res.token 在拦截器中已经优化
-      cookie.set("admin-token",res.token)
-
-      // 获取用户信息
-      getInfo().then(res2 => {
-        console.log(res2);
-      })
-      // 跳转到后台首页
+    store.dispatch('actionLogin', form).then(res=>{
+      toast("恭喜！登陆成功!","success")
       router.push('/')
-     }).finally(()=>{
-        loading.value = false
-     })
-    // .catch(err => {
-    //   //拿到具体报错信息,并通知 已放到拦截器里
-    //   // ElNotification({
-    //   //   type: 'error',
-    //   //   message: err.response.data.msg || '请求失败',
-    //   //   duration: 3000
-    //   // })
-    // })
+    }).finally(()=>{
+      loading.value = false
+    })
   })
 }
 
+// 监听回车事件
+function onKeyUp(e){
+  if(e.key == "Enter") onSubmit()
+}
+
+// 添加键盘监听 页面加载完毕后
+onMounted(() => {
+  document.addEventListener("keyup",onKeyUp)
+})
+// 页面卸载前
+onBeforeUnmount(() => {
+  document.removeEventListener("keyup",onKeyUp)
+})
 
 </script>
 
