@@ -9,7 +9,7 @@
         </div>
 
         <div class="actions">
-          <el-button type="primary" @click="submit">{{ confirmText }}</el-button>
+          <el-button type="primary" @click="submit" :loading="loading">{{ confirmText }}</el-button>
           <el-button type="default" @click="close">取消</el-button>
         </div>
       </div>
@@ -42,7 +42,9 @@
       default:"提交"
     }
   })
-
+  const loading = ref(false)
+  const showLoading = () => loading.value = true
+  const hideLoading = () => loading.value = false
   // 打开
   const open = () => showDrawer.value = true
   // 关闭
@@ -55,7 +57,9 @@
 
   defineExpose({
     open,
-    close
+    close,
+    showLoading,
+    hideLoading
   })
 
 </script>
