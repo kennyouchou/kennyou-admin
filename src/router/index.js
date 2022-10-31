@@ -2,7 +2,6 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 // 页面
 import Admin from "@/layout/admin.vue";
 import Index from '@/pages/index.vue'
-import About from '@/pages/about.vue'
 import NotFound from '@/pages/404.vue'
 import Login from '@/pages/login.vue'
 import GoodList from '@/pages/goods/list.vue'

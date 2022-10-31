@@ -1,19 +1,25 @@
 <template>
+  <el-container>
+    <el-header>
+      <Header></Header>
+    </el-header>
     <el-container>
-      <el-header>
-        <Header></Header>
-      </el-header>
-        <el-container>
-          <el-aside :width="$store.state.asideWidth">
-            <Menu />
-          </el-aside>
-          <el-main>
-            <TagList />
-
-            <router-view></router-view>
-          </el-main>
-        </el-container>
+      <el-aside :width="$store.state.asideWidth">
+        <Menu />
+      </el-aside>
+      <el-main>
+        <TagList />
+        <router-view v-slot="{ Component }">
+          <transition name="fade">
+            <!--  开了10个后 最久没被使用的销毁掉 -->
+            <keep-alive :max="10">
+                <component :is="Component"></component>
+            </keep-alive>
+          </transition>
+        </router-view>
+      </el-main>
     </el-container>
+  </el-container>
 </template>
 
 <script setup>
@@ -23,7 +29,33 @@ import TagList from "./components/TagList.vue";
 </script>
 
 <style scoped>
-.el-aside{
-    transition: all 0.2s;
+.el-aside {
+  transition: all 0.2s;
+}
+
+/* 进入之前 */
+.fade-enter-from{
+    opacity: 0;
+}
+/* 进入之后 */
+.fade-enter-to{
+    opacity: 1;
+}
+/* 离开之前 */
+.fade-leave-from{
+    opacity: 1;
+}
+/* 离开之后 */
+.fade-leave-to{
+    opacity: 0;
+}
+
+/* 过渡时间 */
+.fade-enter-active,
+.fade-leave-active{
+    transition: all 0.3s;
+}
+.fade-enter-active{
+    transition-delay: 0.3s;
 }
 </style>

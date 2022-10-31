@@ -20,7 +20,7 @@
   </el-tabs>
 
     <span class="tag-btn"> 
-      <el-dropdown>
+      <el-dropdown @command="handleClose">
         <span class="el-dropdown-link">
           <el-icon>
             <arrow-down />
@@ -28,7 +28,8 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>Action 1</el-dropdown-item>
+            <el-dropdown-item command="clearOther">关闭其他</el-dropdown-item>
+            <el-dropdown-item command="clearAll">全部关闭</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -38,54 +39,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRoute,onBeforeRouteUpdate } from "vue-router"
-import { useCookies } from '@vueuse/integrations/useCookies'
-import { router } from '@/router';
-const route = useRoute()
-const cookie = useCookies()
-const activeTab = ref(route.path)
-const tabList = ref([
-  {
-    title: '后台首页',
-    path:"/"
-  },
-])
-
-// 添加标签导航
-function addTab(tab){
-  let noTab = tabList.value.findIndex(item=> (item.path == tab.path) == -1)
-  if(noTab){
-    tabList.value.push(tab)
-  }
-
-  cookie.set("tabList",tabList.value)
-}
-
-// 初始化标签导航列表 防止刷新后只剩一个Tag标签
-function initTaList(){
-  let tabs = cookie.get("tabList")
-  if(tabs){
-    tabList.value = tabs
-  }
-}
-initTaList()
-onBeforeRouteUpdate((to,from)=>{
-  activeTab.value = to.path
-  addTab({
-      title:to.meta.title,
-      path:to.path
-  })
-})
-// 点击tab上标签进入对应页面
-const changeTab = (t)=>{
-  activeTab.value = t
-  router.push(t)
-}
-
-const removeTab = (targetName) => {
-
-}
+  import { useTabList } from "@/composables/useTabList"
+  const {       
+        activeTab,
+        tabList,
+        changeTab,
+        removeTab,
+        handleClose 
+    } = useTabList()
 </script>
 
 <style scoped>

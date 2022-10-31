@@ -2,8 +2,9 @@ import {router,addRoutes} from '@/router'
 import { getToken } from "@/composables/auth"
 import { toast,showLoading,hideLoading } from "@/composables/utils"
 import store from './store'
-// 全局前置路由守卫
 
+// 全局前置路由守卫
+let hasGetInfo = false
 router.beforeEach(async (to,from,next) => {
     // 显示loading
     showLoading()
@@ -22,8 +23,9 @@ router.beforeEach(async (to,from,next) => {
 
     // 如果用户登录了 自动获取用户信息 并放在vuex中
     let hasNewRoutes = false
-    if(token){
+    if(token && !hasGetInfo){
       let { menus } = await store.dispatch("actionGetInFo")
+      hasGetInfo = true
       // 这里动态添加路由
       hasNewRoutes = addRoutes(menus)
     }
