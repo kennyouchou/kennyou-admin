@@ -1,7 +1,7 @@
 <template>
-  <div class="menu">
-    <el-menu default-active="2" class="el-menu-vertical-demo"
-    @select="handleSelect">
+  <div class="menu" :style="{ width: $store.state.asideWidth }">
+    <el-menu :default-active="defaultActive" unique-opened :collapse="isCollapse" :collapse-transition="false" default-active="2"
+      class="border-0" @select="handleSelect">
 
       <template v-for="(item, index) in asideMenus" :key="index">
         <el-sub-menu v-if="item.child && item.child.length > 0" :index="item.name">
@@ -11,7 +11,7 @@
             </el-icon>
             <span>{{ item.name }}</span>
           </template>
-          <el-menu-item v-for="(item, index2) in item.child" :key="index2" :index="item2.frontpath">{{ item2.name }}
+          <el-menu-item v-for="(item2, index2) in item.child" :key="index2" :index="item2.frontpath">
             <el-icon>
               <component :is="item2.icon"></component>
             </el-icon>
@@ -31,24 +31,34 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+import { computed,ref } from 'vue'
+import { useRouter,useRoute } from 'vue-router'
+import { useStore } from 'vuex';
 const router = useRouter()
-const asideMenus = [{
+const store = useStore()
+// 默认值要等于当前路由路径
+const route = useRoute()
+const defaultActive = ref(route.path)
 
-}]
-
-const handleSelect = (e)=>{
-  router.push()
+// 左侧菜单是否折叠
+const isCollapse = computed(() => !(store.state.asideWidth == '250px'))
+const asideMenus = computed(()=>store.state.menus)
+const handleSelect = (e) => {
+  router.push(e)
 }
 </script>
 
 <style scoped>
 .menu {
-  width: 250px;
+  transition: all 0.2s;
   top: 64px;
   bottom: 0;
   left: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   @apply shadow-md fixed bg-light-50;
+}
+.menu::-webkit-scrollbar{
+  width: 0px;
 }
 </style>

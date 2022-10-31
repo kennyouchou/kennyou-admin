@@ -7,10 +7,14 @@
       </el-icon>
       Kennyouchou
     </span>
+
     <!-- 折叠图标 -->
-    <el-icon class="icon-btn">
-      <fold />
+    <el-icon class="icon-btn" @click="$store.commit('handleAsideWidth')">
+      <fold v-if="$store.state.asideWidth == '250px'" />
+      <!-- 点击后显示展开图标 -->
+    <Expand v-else />
     </el-icon>
+
     <!-- 刷新图标 -->
     <el-tooltip
         effect="dark"

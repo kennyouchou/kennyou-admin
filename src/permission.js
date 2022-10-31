@@ -1,4 +1,4 @@
-import router from '@/router'
+import {router,addRoutes} from '@/router'
 import { getToken } from "@/composables/auth"
 import { toast,showLoading,hideLoading } from "@/composables/utils"
 import store from './store'
@@ -21,14 +21,17 @@ router.beforeEach(async (to,from,next) => {
     }
 
     // 如果用户登录了 自动获取用户信息 并放在vuex中
+    let hasNewRoutes = false
     if(token){
-      await store.dispatch("actionGetInFo")
+      let { menus } = await store.dispatch("actionGetInFo")
+      // 这里动态添加路由
+      hasNewRoutes = addRoutes(menus)
     }
 
     // 设置页面标题
     let title = (to.meta.title ? to.meta.title : "") + "--kennyouchou"
     document.title = title
-    next()
+    hasNewRoutes ? next(to.fullPath) : next()
 })
 
 router.afterEach((to,from)=>{
