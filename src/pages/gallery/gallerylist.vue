@@ -1,5 +1,5 @@
 <template>
-    <el-container class="bg-gray-100 rounded" :style="{height:(h + 'px')}">
+    <el-container class="bg-gray-50 rounded" :style="{height:(h + 'px')}">
       <el-header class="image-header">Header</el-header>
       <el-container>
         <!-- 侧边 -->
