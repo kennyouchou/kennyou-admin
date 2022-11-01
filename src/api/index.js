@@ -10,3 +10,9 @@ export function getStatistics3(type) {
   // 请求拦截器已经自动加token了 这里没必要传了
   return axios.get("/admin/statistics3?type="+type)
 }
+
+// 店铺和交易数据获取
+export function getStatistics2() {
+  // 请求拦截器已经自动加token了 这里没必要传了
+  return axios.get("/admin/statistics2")
+}

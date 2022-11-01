@@ -12,6 +12,8 @@ const store = createStore({
 
       // 菜单
       menus:[],
+
+      // 用户权限数组
       ruleNames:[]
     }
   },
@@ -19,7 +21,6 @@ const store = createStore({
     // 记录用户信息
     SET_USERINFO(state,user){
         state.user = user
-        console.log(state.user);
     },
 
     handleAsideWidth(state){
@@ -50,6 +51,7 @@ const store = createStore({
     actionGetInFo( {commit} ){
         return new Promise((resolve,reject) => {
           getInfo().then(res => {
+            console.log(res);
             commit("SET_USERINFO",res)
             commit("SET_MENUS",res.menus)
             // console.log(res.menus);

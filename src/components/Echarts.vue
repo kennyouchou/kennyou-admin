@@ -14,8 +14,7 @@
         </div>
       </template>
       <!-- 柱状图 -->
-      <div id="chart" style="width:100%;height:300px;">
-
+      <div ref="el" id="chart" style="width:100%;height:300px;">
       </div>
     </el-card>
     
@@ -25,6 +24,7 @@
 import * as echarts from 'echarts';
 import { ref,onMounted,onBeforeUnmount } from "vue";
 import { getStatistics3 } from "@/api/index";
+import { useResizeObserver } from '@vueuse/core'
   const current = ref("week")
   const options =[
     {
@@ -51,8 +51,12 @@ import { getStatistics3 } from "@/api/index";
   var myChart = null
   onMounted(()=>{
     var chartDom = document.getElementById('chart');
-    myChart = echarts.init(chartDom);
-    getData()
+    // 存在才获取数据
+    if(chartDom){
+      myChart = echarts.init(chartDom);
+      getData()
+    }
+
   })
     
     // 释放下组件 销毁实例 防止白屏
@@ -89,9 +93,11 @@ import { getStatistics3 } from "@/api/index";
     }).finally(()=>{
       myChart.hideLoading()
     })
-
-
   }
+  const el = ref()
+  useResizeObserver(el, (entries) => {
+        myChart.resize()
+    })
 </script>
 
 <style lang="less" scoped>
