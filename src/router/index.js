@@ -6,7 +6,13 @@ import NotFound from '@/pages/404.vue'
 import Login from '@/pages/login.vue'
 import GoodList from '@/pages/goods/list.vue'
 import CategoryList from '@/pages/category/list.vue'
-
+import UserList from '@/pages/user/userlist.vue'
+import Setting from '@/pages/setting/base.vue'
+import OrderList from '@/pages/order/orderlist.vue'
+import Notice from '@/pages/notice/noticelist.vue'
+import GalleryList from '@/pages/gallery/gallerylist.vue'
+import CouponList from '@/pages/coupon/couponlist.vue'
+import CommentList from '@/pages/comment/commentlist.vue'
 // 默认路由，所有用户都拥有
 const routes = [
   {
@@ -43,14 +49,72 @@ const asyncRoutes = [{
   meta:{
       title:"商品管理"
   }
-},{
+},
+{
   path:"/category/list",
   name:"/category/list",
   component:CategoryList,
   meta:{
       title:"分类列表"
   }
-}]
+},
+{
+  path:"/user/list",
+  name:"/user/list",
+  component:UserList,
+  meta:{
+      title:"用户列表"
+  }
+},
+{
+  path:"/order/list",
+  name:"/order/list",
+  component:OrderList,
+  meta:{
+      title:"订单列表"
+  }
+},
+{
+  path:"/notice/list",
+  name:"/notice/list",
+  component:Notice,
+  meta:{
+      title:"公告列表"
+  }
+},
+{
+  path:"/comment/list",
+  name:"/comment/list",
+  component:CommentList,
+  meta:{
+      title:"评价列表"
+  }
+},
+{
+  path:"/image/list",
+  name:"/image/list",
+  component:GalleryList,
+  meta:{
+      title:"图库列表"
+  }
+},
+{
+  path:"/coupon/list",
+  name:"/coupon/list",
+  component:CouponList,
+  meta:{
+      title:"优惠券列表"
+  }
+},
+{
+  path:"/setting/base",
+  name:"/setting/base",
+  component:Setting,
+  meta:{
+      title:"配置"
+  }
+},
+]
 
 export const router = createRouter({
   history: createWebHashHistory(),
