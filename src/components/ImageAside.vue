@@ -12,12 +12,25 @@
       @current-change="getData" />
     </div>
   </el-aside>
+
+  <FormDrawer title="新增" ref="formDrawerRef" @submit="handleSubmit">
+      <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
+        <el-form-item label="分类名称" prop="name">
+          <el-input v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="排序" prop="order">
+          <el-input-number v-model="form.order" :min="0" :max="1000"></el-input-number>
+        </el-form-item>
+      </el-form>
+      
+  </FormDrawer>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref,reactive } from "vue";
 import { getImageClassList } from "@/api/image"
 import AsideList from "@/components/AsideList.vue";
+import FormDrawer from "./FormDrawer.vue";
 const activeId = ref(0)
 // 加载动画
 const loading = ref(false)
@@ -47,6 +60,34 @@ function getData(p = null){
 }
 getData()
 
+const formDrawerRef = ref(null)
+const handleCreate = () => {formDrawerRef.value.open()}
+
+
+const form = reactive({
+  name:"",
+  order:50
+})
+
+const rules = {
+    name:[{
+        required: true,
+        message: '警告，图库分类名称不能为空',
+        trigger: 'blur', //失去焦点时
+    }]
+}
+
+const formRef = ref(null)
+
+const handleSubmit = () =>{
+  formRef.value.validate((valid)=>{
+      if(!valid) return
+  })
+}
+
+defineExpose({
+  handleCreate
+})
 
 </script>
 
