@@ -4,6 +4,9 @@
         <el-button type="primary" size="small" @click="handleOpenCreate">
             新增图片分类
         </el-button>
+        <el-button type="warning" size="small" @click="handleOpenLoad">
+            上传图片
+        </el-button>
       </el-header>
       <el-container>
         <!-- 侧边 -->
@@ -30,6 +33,8 @@ const handleAsideChange = (image_class_id) =>{
     // console.log(image_class_id);
     ImageMainRef.value.loadData(image_class_id)
 }
+
+const handleOpenLoad = () => ImageMainRef.value.openUploadFile()
 </script>
 
 <style scoped>

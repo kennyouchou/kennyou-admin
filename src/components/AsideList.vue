@@ -4,7 +4,7 @@
       <!-- 图片列表 -->
       <slot />
     </span>
-    <el-button class="ml-auto px-1" text type="primary" size="small" @click="$emit('edit')">
+    <el-button class="ml-auto px-1" text type="primary" size="small" @click.stop="$emit('edit')">
       <el-icon :size="14">
         <Edit />
       </el-icon>

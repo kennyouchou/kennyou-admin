@@ -17,23 +17,28 @@ export function toast(
 
 // 带有确定取消的提示框
 export function showMsgBox(content = '提示内容', type = 'warning', title = '') {
-    return ElMessageBox.confirm(
-    content,
-    title,
-    {
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Cancel',
-      type,
-    }
-  )
+  return ElMessageBox.confirm(content, title, {
+    confirmButtonText: 'OK',
+    cancelButtonText: 'Cancel',
+    type,
+  })
 }
 
 // 显示全屏loading
-export function showLoading(){
+export function showLoading() {
   nprogress.start()
 }
 
 // 隐藏全屏loading
-export function hideLoading(){
+export function hideLoading() {
   nprogress.done()
+}
+
+// 弹出输入框
+export function showPrompt(tip,value = '') {
+  return ElMessageBox.prompt(tip, '', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    inputValue:value
+  })
 }

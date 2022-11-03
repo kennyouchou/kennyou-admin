@@ -1,44 +1,49 @@
 <template>
   <el-main class="image-main" v-loading="loading">
     <div class="top p-3">
-
       <el-row :gutter="10">
-        <el-col :span="6" :offset="0" 
-        v-for="(item,index) in list" :key="index">
-        <el-card class="relative mb-3" shadow="hover" :body-style="{'padding':0}">
-            <el-image :src="(item.url)" fit="cover" class="h-[140px]"
-            style="width: 100%;"></el-image>
+        <el-col :span="6" :offset="0" v-for="(item, index) in list" :key="index">
+          <el-card class="relative mb-3" shadow="hover" :body-style="{ 'padding': 0 }">
+            <el-image :preview-src-list="[item.url]" :initial-index="0" :src="(item.url)" fit="cover" class="h-[140px]"
+              style="width: 100%;"></el-image>
             <div class="image-title">
-              {{item.name}}
+              {{ item.name }}
             </div>
             <div class="flex justify-center items-center p-2">
-                <el-button type="primary" size="small" text>
-                    重命名
-                </el-button>
-                <el-button type="primary" size="small" text>
-                    删除
-                </el-button>
+              <el-button type="primary" size="small" text
+              @click="handleEditName(item)">
+                重命名
+              </el-button>
+              <el-popconfirm title="是否要删除该图片" confirm-button-text="确认"
+              cancel-button-text="取消" @confirm="handleDelete(item.id)">
+                <template #reference>
+                    <el-button type="primary" size="small" text>
+                      删除
+                    </el-button>
+                </template>
+              </el-popconfirm>
             </div>
-        </el-card>
-        
-      </el-col>
+          </el-card>
+        </el-col>
       </el-row>
-      
     </div>
     <div class="bottom">
-      <el-pagination background layout="prev,pager,next" 
-      :total="total" 
-      :current-page="currentPage" 
-      :page-size="limit"
-      @current-change="getData" />
+      <el-pagination background layout="prev,pager,next" :total="total" :current-page="currentPage" :page-size="limit"
+        @current-change="getData" />
     </div>
   </el-main>
+  <el-drawer v-model="drawer" title="上传图片">
+      <UpLoadFile :data="{ image_class_id}" 
+      @success="handleUploadSuccess"></UpLoadFile>
+  </el-drawer>
+
 </template>
 
 <script setup>
-import {getImageList} from "@/api/image"
+import { getImageList,updateImageName,deleteImage } from "@/api/image"
 import { ref } from "vue";
-
+import { showPrompt, toast } from "@/composables/utils";
+import UpLoadFile from "@/components/UpLoadFile.vue";
 // 分页
 const currentPage = ref(1) //当前页
 const total = ref(0)  //总条数
@@ -53,7 +58,7 @@ function getData (p = null) {
     currentPage.value = p
   }
   loading.value = true
-  getImageList(image_class_id.value,currentPage.value).then(res => {
+  getImageList(image_class_id.value, currentPage.value).then(res => {
     total.value = res.totalCount
     list.value = res.list
   }).finally(() => {
@@ -62,22 +67,60 @@ function getData (p = null) {
 }
 // 根据分类id重新加载图片列表
 const loadData = (id) => {
-    currentPage.value = 1
-    image_class_id.value = id
-    getData()
+  currentPage.value = 1
+  image_class_id.value = id
+  getData()
 }
 
+// 重命名方法
+const handleEditName = (item) => {
+  showPrompt("重命名",item.name)
+  .then(({value})=>{
+
+      loading.value = true
+      updateImageName(item.id,value)
+      .then(res=>{
+        toast("修改成功")
+        getData()
+      })
+  })
+  .finally(()=>{
+      loading.value = false
+  })
+}
+// 删除图片方法
+const handleDelete = (id) =>{
+    loading.value = true
+    deleteImage([id]).then(res=>{
+        toast("删除成功")
+        getData()
+    })
+    .finally(()=>{
+      loading.value = false
+    })
+}
+
+// 上传图片
+const drawer = ref(false)
+const openUploadFile = () => drawer.value = true
+// 上传成功 刷新列表
+const handleUploadSuccess =() =>{
+  toast("上传成功")
+  getData(1)
+}
 defineExpose({
-  loadData
+  loadData,
+  openUploadFile
 })
 
 </script>
 
 <style scoped>
-.image-main{
+.image-main {
   position: relative;
 }
-.image-main .top{
+
+.image-main .top {
   position: absolute;
   top: 0;
   right: 0;
@@ -85,7 +128,8 @@ defineExpose({
   bottom: 50px;
   overflow-y: auto;
 }
-.image-main .bottom{
+
+.image-main .bottom {
   position: absolute;
   bottom: 0;
   height: 50px;
@@ -93,12 +137,12 @@ defineExpose({
   right: 0;
   @apply flex items-center justify-center;
 }
-.image-title{
+
+.image-title {
   position: absolute;
   top: 122px;
   left: -1px;
   right: -1px;
-  @apply text-sm truncate text-gray-100 bg-opacity-50 bg-gray-800
-  px-2 py-1;
+  @apply text-sm truncate text-gray-100 bg-opacity-50 bg-gray-800 px-2 py-1;
 }
 </style>
