@@ -5,13 +5,11 @@
             新增图片分类
         </el-button>
       </el-header>
-
-        
       <el-container>
         <!-- 侧边 -->
-        <ImageAside ref="ImageAsideRef" />
+        <ImageAside ref="ImageAsideRef" @change="handleAsideChange" />
         <!-- 主体区域 -->
-        <ImageMain />
+        <ImageMain ref="ImageMainRef" />
       </el-container>
     </el-container>
 </template>
@@ -26,6 +24,12 @@ const h = windowHeight -64 -44 - 40
 
 const ImageAsideRef = ref(null)
 const handleOpenCreate = () =>ImageAsideRef.value.handleCreate()
+
+const ImageMainRef = ref(null)
+const handleAsideChange = (image_class_id) =>{
+    // console.log(image_class_id);
+    ImageMainRef.value.loadData(image_class_id)
+}
 </script>
 
 <style scoped>

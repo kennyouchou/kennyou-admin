@@ -1,6 +1,26 @@
 import axios from "@/axios"
 
 export function getImageClassList(page){
-
   return axios.get("/admin/image_class/" + page)
+}
+
+// 创建图片分类
+export function createImageClass(data){
+  return axios.post("/admin/image_class",data)
+}
+
+// 修改图片分类
+export function updateImageClass(id,data){
+  return axios.post("/admin/image_class/"+id,data)
+}
+
+// 删除图片分类
+export function deleteImageClass(id){
+  return axios.post(`/admin/image_class/${id}/delete`)
+}
+
+// 指定图片分类下的图片列表
+
+export function getImageList(id , page = 1){
+  return axios.get(`/admin/image_class/${id}/image/${page}`)
 }
