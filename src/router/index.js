@@ -13,6 +13,7 @@ import Notice from '@/pages/notice/noticelist.vue'
 import GalleryList from '@/pages/gallery/gallerylist.vue'
 import CouponList from '@/pages/coupon/couponlist.vue'
 import CommentList from '@/pages/comment/commentlist.vue'
+import Manager from "@/pages/manager/list.vue";
 // 默认路由，所有用户都拥有
 const routes = [
   {
@@ -112,6 +113,14 @@ const asyncRoutes = [{
   component:Setting,
   meta:{
       title:"配置"
+  }
+},
+{
+  path:"/manager/list",
+  name:"/manager/list",
+  component:Manager,
+  meta:{
+      title:"管理员管理"
   }
 },
 ]

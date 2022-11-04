@@ -18,7 +18,7 @@
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column prop="title" label="公告标题" />
       <el-table-column prop="create_time" label="发布时间" width="180" />
-      <!-- 自定义表格 -->
+      <!-- 自定义表格 修改 删除按钮-->
       <el-table-column label="操作" width="180" align="center">
         <template #default="scope">
           <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
@@ -33,6 +33,7 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页 -->
     <div class="flex items-center justify-center mt-5">
       <el-pagination background layout="prev, pager,next" :total="total" :current-page="currentPage" :page-size="limit"
         @current-change="getData" />
@@ -40,14 +41,13 @@
 
     <FormDrawer ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
         <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
-          <el-form-item label="公告标题" props="title">
+          <el-form-item label="公告标题" prop="title">
             <el-input v-model="form.title" placeholder="公告标题"></el-input>
           </el-form-item>
-          <el-form-item label="公告内容" props="content">
+          <el-form-item label="公告内容" prop="content">
             <el-input v-model="form.content" placeholder="公告内容" type="textarea" :rows="5"></el-input>
           </el-form-item>
         </el-form>
-        
     </FormDrawer>
   </el-card>
 </template>
@@ -57,6 +57,18 @@ import { ref,reactive,computed } from "vue";
 import { getNoticeList,createNotice,updateNotice,deleteNotice } from "@/api/notice"
 import FormDrawer from "@/components/FormDrawer.vue";
 import { toast } from "@/composables/utils";
+const rules = {
+  title: [{
+    required: true,
+    message: '警告，图库分类名称不能为空',
+    trigger: 'blur', //失去焦点时
+  }],
+  content: [{
+    required: true,
+    message: '警告，图库分类名称不能为空',
+    trigger: 'blur', //失去焦点时
+  }]
+}
 // 加载动画
 const loading = ref(false)
 
@@ -100,18 +112,6 @@ const form = reactive({
   content:""
 })
 
-const rules = {
-  title: [{
-    required: true,
-    message: '警告，公告标题不能为空',
-    trigger: 'blur', //失去焦点时
-  }],
-  content: [{
-    required: true,
-    message: '警告，公告内容不能为空',
-    trigger: 'blur', //失去焦点时
-  }]
-}
 // 0为新增 有值则为当前值修改功能
 const editId =ref(0)
 const drawerTitle = computed(() => editId.value ? "修改" : "新增")
