@@ -1,4 +1,11 @@
 <template>
+  <div v-if="modelValue">
+    <el-image :src="modelValue" fit="cover" class="w-[100px] h-[100px]
+    rounded border m-2" >
+    </el-image>
+    
+  </div>
+
   <div class="choose-image-btn" @click="open">
       <el-icon :size="25"><Plus /></el-icon>
   </div>
@@ -22,34 +29,30 @@
         <!-- 侧边 -->
         <ImageAside ref="ImageAsideRef" @change="handleAsideChange" />
         <!-- 主体区域 -->
-        <ImageMain ref="ImageMainRef" />
+        <ImageMain openChoose ref="ImageMainRef" @choose="handleChoose" />
       </el-container>
     </el-container>
-
-
-
     <span></span>
     <template #footer>
     <span>
-      <el-button @click="dialogVisible = false">Cancel</el-button>
-      <el-button type="primary" @click="submit">OK</el-button>
+      <el-button @click="close">取消</el-button>
+      <el-button type="primary" @click="submit">确定</el-button>
     </span>
     </template>
   </el-dialog>
-  
 </template>
-
 <script setup>
 import { ref } from 'vue';
 import ImageAside from "@/components/ImageAside.vue";
 import ImageMain from "@/components/ImageMain.vue";
 const dialogVisible = ref(false)
-const submit = () =>{
 
-}
-
+// 图片列表选择框
 const open = () =>{
   dialogVisible.value = true
+}
+const close = () =>{
+  dialogVisible.value = false
 }
 
 const ImageAsideRef = ref(null)
@@ -62,6 +65,25 @@ const handleAsideChange = (image_class_id) =>{
 }
 
 const handleOpenLoad = () => ImageMainRef.value.openUploadFile()
+
+const props = defineProps({
+  modelValue:[String,Array]
+})
+const emit = defineEmits(["update:modelValue"])
+
+let urls = []
+const handleChoose = (e) =>{
+  // 拿到图片地址
+  urls = e.map(o=>o.url)
+}
+
+// 选中图片确认后
+const submit = () =>{
+  if(urls.length){
+    emit("update:modelValue",urls[0])
+  }
+  close()
+}
 </script>
 
 <style scoped>

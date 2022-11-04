@@ -83,27 +83,23 @@
       <el-pagination background layout="prev, pager,next" :total="total" :current-page="currentPage" :page-size="limit"
         @current-change="getData" />
     </div>
-
+    <!-- 抽屉 -->
     <FormDrawer ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
       <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="form.username" placeholder="请输入用户名"></el-input>
         </el-form-item>
-
         <el-form-item label="密码" prop="password">
           <el-input v-model="form.password" placeholder="请输入密码"></el-input>
         </el-form-item>
-
         <el-form-item label="头像" prop="avatar">
-          <ChooseImage></ChooseImage>
+          <ChooseImage v-model="form.avatar"></ChooseImage>
         </el-form-item>
-        
         <el-form-item label="所属角色" prop="role_id">
           <el-select v-model="form.role_id" placeholder="所属角色选择">
             <el-option v-for="item in roleList" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
-
         </el-form-item>
         <el-form-item label="状态" prop="content">
           <el-switch v-model="form.status" :active-value="1" :inactive-value="0">

@@ -3,13 +3,16 @@
     <div class="top p-3">
       <el-row :gutter="10">
         <el-col :span="6" :offset="0" v-for="(item, index) in list" :key="index">
-          <el-card class="relative mb-3" shadow="hover" :body-style="{ 'padding': 0 }">
+          <el-card class="relative mb-3" :class="{'border-blue-500':item.checked }" shadow="hover" :body-style="{ 'padding': 0 }">
             <el-image :preview-src-list="[item.url]" :initial-index="0" :src="(item.url)" fit="cover" class="h-[140px]"
               style="width: 100%;"></el-image>
             <div class="image-title">
               {{ item.name }}
             </div>
             <div class="flex justify-center items-center p-2">
+
+              <el-checkbox v-if="openChoose" v-model="item.checked" @change="handleChooseChange(item)" />
+              
               <el-button type="primary" size="small" text
               @click="handleEditName(item)">
                 重命名
@@ -17,7 +20,7 @@
               <el-popconfirm title="是否要删除该图片" confirm-button-text="确认"
               cancel-button-text="取消" @confirm="handleDelete(item.id)">
                 <template #reference>
-                    <el-button type="primary" size="small" text>
+                    <el-button class="!m-0" type="primary" size="small" text>
                       删除
                     </el-button>
                 </template>
@@ -41,7 +44,7 @@
 
 <script setup>
 import { getImageList,updateImageName,deleteImage } from "@/api/image"
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { showPrompt, toast } from "@/composables/utils";
 import UpLoadFile from "@/components/UpLoadFile.vue";
 // 分页
@@ -60,7 +63,10 @@ function getData (p = null) {
   loading.value = true
   getImageList(image_class_id.value, currentPage.value).then(res => {
     total.value = res.totalCount
-    list.value = res.list
+    list.value = res.list.map(o=>{
+      o.checked = false
+      return o
+    })
   }).finally(() => {
     loading.value = false
   })
@@ -108,6 +114,26 @@ const handleUploadSuccess =() =>{
   toast("上传成功")
   getData(1)
 }
+
+defineProps({
+  openChoose:{
+    type:Boolean,
+    default:false
+  }
+})
+
+// 选中的图片
+const emit = defineEmits("[choose]")   // 通知父组件
+const checkedImage = computed(()=>list.value.filter(o=>o.checked))
+const handleChooseChange = (item) => {
+  if(item.checked && checkedImage.value.length > 1 ){
+    item.checked = false
+    return toast("最多只能选一张","error")
+  }
+  // 将值传到父组件
+  emit("choose",checkedImage.value)
+}
+
 defineExpose({
   loadData,
   openUploadFile
