@@ -11,6 +11,7 @@
     </el-button>
 
     <!-- 删除按钮 -->
+    <span @click.stop="()=>{}">
     <el-popconfirm title="是否要删除该分类" confirm-button-text="确认"
     cancel-button-text="取消" @confirm="$emit('delete')">
       <template #reference>
@@ -21,7 +22,7 @@
         </el-button>
       </template>
     </el-popconfirm>
-
+    </span>
   </div>
 </template>
 
