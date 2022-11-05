@@ -14,6 +14,7 @@ import GalleryList from '@/pages/gallery/gallerylist.vue'
 import CouponList from '@/pages/coupon/couponlist.vue'
 import CommentList from '@/pages/comment/commentlist.vue'
 import Manager from "@/pages/manager/list.vue";
+import AccessList from "@/pages/access/list.vue";
 // 默认路由，所有用户都拥有
 const routes = [
   {
@@ -121,6 +122,14 @@ const asyncRoutes = [{
   component:Manager,
   meta:{
       title:"管理员管理"
+  }
+},
+{
+  path:"/access/list",
+  name:"/access/list",
+  component:AccessList,
+  meta:{
+      title:"菜单权限管理"
   }
 },
 ]

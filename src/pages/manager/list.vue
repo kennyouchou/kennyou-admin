@@ -19,19 +19,7 @@
       </el-row>
     </el-form>
     <!-- 头部的 新增 刷新功能 -->
-    <div class="flex items-center justify-between mb-4">
-      <el-button class="ml-4" type="primary" size="small" @click="handleCreate">
-        新增
-      </el-button>
-      <!-- 刷新数据 -->
-      <el-tooltip effect="dark" content="刷新数据" placement="top">
-        <el-button @click="getData">
-          <el-icon :size="20">
-            <Refresh />
-          </el-icon>
-        </el-button>
-      </el-tooltip>
-    </div>
+    <ListHeader @create="handleCreate" @refresh="getData"></ListHeader>
 
     <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column label="管理员" width="200">
@@ -111,141 +99,66 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from "vue";
+import { ref } from "vue";
+import ListHeader from "@/components/ListHeader.vue";
 import FormDrawer from "@/components/FormDrawer.vue";
 import ChooseImage from "@/components/ChooseImage.vue"
-import { toast } from "@/composables/utils";
 import { getManagerList, updateManagerStatus, addManager, editManager, deleteManager } from "@/api/manager"
+import { useInitTable ,useInitForm } from "@/composables/useCommon";
 
-// 搜索框
-const searchForm = ref({
-  keyword: ""
-})
-
-const resetSearchForm = () => {
-  searchForm.value = ""
-  getData()
-}
-
-const rules = {
-}
-// 加载动画
-const loading = ref(false)
-
-// 分页
-const currentPage = ref(1) //当前页
-const total = ref(0)  //总条数
-const limit = ref(10)  // 每页限制10条
-// 列表
-const tableData = ref([])
-// 角色状态列表
 const roleList = ref([])
-function getData (p = null) {
-  if (typeof p == "number") {
-    currentPage.value = p
-  }
-  loading.value = true
-  getManagerList(currentPage.value, searchForm)
-    .then(res => {
-      tableData.value = res.list.map(o => {
-        o.statusLoading = false
-        return o
-      })
-      total.value = res.totalCount
-      roleList.value = res.roles
-    }).finally(() => {
-      loading.value = false
-    })
-}
 
-getData()
-
-// 删除管理员
-const handleDelete = (id) => {
-  loading.value = true
-  deleteManager(id).then(res => {
-    toast("删除成功")
-    getData()
-  })
-    .finally(() => {
-      loading.value = false
+const {
+  searchForm,
+  resetSearchForm,
+  tableData,
+  loading,
+  currentPage,
+  total,
+  limit,
+  getData,
+  handleDelete,
+  handleStatusChange
+} = useInitTable({
+  searchForm:{
+    keyword:""
+  },
+  getList: getManagerList,
+  onGetListSuccess: (res) => {
+    tableData.value = res.list.map((o) => {
+      o.statusLoading = false
+      return o
     })
-}
-// 新增公告抽屉表单
-const formDrawerRef = ref(null)
-const formRef = ref(null)
-const form = reactive({
-  username: "",
-  password: "",
-  role_id: null,
-  status: 1,
-  avatar: ""
+    total.value = res.totalCount
+    roleList.value = res.roles
+  },
+  delete:deleteManager,
+  updateStatus:updateManagerStatus
 })
 
-// 0为新增 有值则为当前值修改功能
-const editId = ref(0)
-const drawerTitle = computed(() => editId.value ? "修改" : "新增")
-// 提交表单
-const handleSubmit = () => {
-  formRef.value.validate((valid) => {
-    if (!valid) return
-    formDrawerRef.value.showLoading()
-    const fun = editId.value ? editManager(editId.value, form) : addManager(form)
-    fun.then(res => {
-      toast(drawerTitle.value + "公告成功")
-      // 修改就刷新当前页 新增刷新到第一页
-      getData(editId.value ? false : 1)
-      formDrawerRef.value.close()
-    })
-      .finally(() => {
-        formDrawerRef.value.hideLoading()
-      })
-  })
-}
-// 重置表单
-function resetForm (row = false) {
-  if (formRef.value) {
-    formRef.value.clearValidate()
-  }
-  if (row) {
-    for (const key in form) {
-      form[key] = row[key]
-    }
-  }
-}
-
-// 打开抽屉
-const handleCreate = () => {
-  editId.value = 0
-  resetForm({
-    username: "",
-    password: "",
+const {
+    formDrawerRef,
+    formRef,
+    form,
+    rules,
+    drawerTitle,
+    handleCreate,
+    handleSubmit,
+    handleEdit
+} = useInitForm({
+  form:{
+    username: '',
+    password: '',
     role_id: null,
     status: 1,
-    avatar: ""
-  })
-  formDrawerRef.value.open()
-}
-// 编辑
-// row 当前对象
-const handleEdit = (row) => {
-  editId.value = row.id
-  resetForm(row)
-  formDrawerRef.value.open()
-}
+    avatar: '',
+  },
+  getData,
+  update:editManager,
+  create:addManager
+})
 
-// 修改管理员状态
-const handleStatusChange = (status, row) => {
-  row.statusLoading = true
-  updateManagerStatus(row.id, status)
-    .then(res => {
-      toast("修改状态成功")
-      row.status = status
-    })
-    .finally(() => {
-      row.statusLoading = false
-    })
-}
+
 </script>
 
 <style scoped>

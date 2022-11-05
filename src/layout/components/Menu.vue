@@ -32,14 +32,17 @@
 
 <script setup>
 import { computed,ref } from 'vue'
-import { useRouter,useRoute } from 'vue-router'
+import { useRouter,useRoute,onBeforeRouteUpdate } from 'vue-router'
 import { useStore } from 'vuex';
 const router = useRouter()
 const store = useStore()
 // 默认值要等于当前路由路径
 const route = useRoute()
 const defaultActive = ref(route.path)
-
+// 监听路由变化
+onBeforeRouteUpdate((to,from)=>{
+  defaultActive.value = to.path
+})
 // 左侧菜单是否折叠
 const isCollapse = computed(() => !(store.state.asideWidth == '250px'))
 const asideMenus = computed(()=>store.state.menus)
