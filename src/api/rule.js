@@ -14,3 +14,15 @@ export function createRule(data){
 export function updateRule(id,data){
   return axios.post("/admin/rule/"+id,data)
 }
+
+// 修改管理员状态
+export function updateRuleStatus(id,status){
+  return axios.post(`/admin/rule/${id}/update_status`,{
+    status
+  })
+}
+
+// 删除管理员
+export function deleteRule(id){
+  return axios.post(`/admin/rule/${id}/delete`)
+}

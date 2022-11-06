@@ -90,7 +90,3 @@ const {
 })
 
 </script>
-
-<style scoped>
-
-</style>
