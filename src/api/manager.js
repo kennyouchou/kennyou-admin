@@ -1,5 +1,5 @@
 import axios from '@/axios'
-
+import { queryParams } from "@/composables/utils";
 export function login(username,password){
   return axios.post(
     '/admin/login',
@@ -26,21 +26,17 @@ export function updatePassword(data) {
 }
 
 // 获取管理员列表
-export function getManagerList(page,query = {
-  // limit:10,
-  // keyword:"ceshi"
-}) {
-  let q = []
-  for (const key in query) {
-      if(query[key]){
-        q.push(`${key}=${encodeURIComponent(query[key])}`)
-      }
-  }
-  let r = q.join("&")
-  r = r ? ("?" + r) : ""
-  // 拼接出来的结果 limit=10&keyword=ceshi
+export function getManagerList(page,query = {}){
+
+  let r = queryParams(query)
   return axios.get(`/admin/manager/${page}${r}`)
 }
+  // limit:10,
+  // keyword:"ceshi"
+
+  // 拼接出来的结果 limit=10&keyword=ceshi
+  
+
 
 // 修改管理员状态
 export function updateManagerStatus(id,status){

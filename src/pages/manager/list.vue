@@ -2,22 +2,11 @@
   <el-card shadow="never" class="border-0">
 
     <!-- 搜索管理员功能 -->
-    <el-form :model="searchForm" label-width="110px" class="mb-3" size="small">
-      <el-row :gutter="20">
-        <el-col :span="4" :offset="0">
-          <el-form-item label="关键词搜索">
-            <el-input v-model="searchForm.keyword" placeholder="管理员昵称" clearable>
-            </el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6" :offset="0">
-          <el-form-item>
-            <el-button type="primary" @click="getData">搜索</el-button>
-            <el-button @click="resetSearchForm">重置</el-button>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
+    <Search :model="searchForm" @search="getData" @reset="resetSearchForm">
+        <SearchItem label="关键词">
+          <el-input v-model="searchForm.keyword" placeholder="管理员昵称" clearable></el-input>
+        </SearchItem>
+    </Search>
     <!-- 头部的 新增 刷新功能 -->
     <ListHeader @create="handleCreate" @refresh="getData"></ListHeader>
 
@@ -105,6 +94,8 @@ import FormDrawer from "@/components/FormDrawer.vue";
 import ChooseImage from "@/components/ChooseImage.vue"
 import { getManagerList, updateManagerStatus, addManager, editManager, deleteManager } from "@/api/manager"
 import { useInitTable ,useInitForm } from "@/composables/useCommon";
+import Search from "@/components/Search.vue";
+import SearchItem from "@/components/SearchItem.vue";
 
 const roleList = ref([])
 

@@ -95,9 +95,28 @@ export function useInitTable(opt = {}) {
   const multipleTableRef = ref(null)
   const handleMultiDelete = () => {
     loading.value = true
-    opt.delete(multiSelectIds.value)
+    opt
+      .delete(multiSelectIds.value)
       .then((res) => {
         toast('删除成功')
+        // 清空选中
+        if (multipleTableRef.value) {
+          multipleTableRef.value.clearSelection()
+        }
+        getData()
+      })
+      .finally(() => {
+        loading.value = false
+      })
+  }
+
+  // 批量修改状态
+  const handleMultiStatusChange = (status) => {
+    loading.value = true
+    opt
+      .updateStatus(multiSelectIds.value, status)
+      .then((res) => {
+        toast('修改状态成功')
         // 清空选中
         if (multipleTableRef.value) {
           multipleTableRef.value.clearSelection()
@@ -122,8 +141,8 @@ export function useInitTable(opt = {}) {
     handleStatusChange,
     handleSelectionChange,
     multipleTableRef,
-    handleMultiDelete
-
+    handleMultiDelete,
+    handleMultiStatusChange,
   }
 }
 
@@ -145,12 +164,11 @@ export function useInitForm(opt = {}) {
       if (!valid) return
       formDrawerRef.value.showLoading()
 
-
       // 让对象的每个值解构成新的对象传回去 最后返回对象给body 转为时间戳
       let body = {}
-      if(opt.beforeSubmit && typeof opt.beforeSubmit == "function"){
-        body = opt.beforeSubmit({...form})
-      }else{
+      if (opt.beforeSubmit && typeof opt.beforeSubmit == 'function') {
+        body = opt.beforeSubmit({ ...form })
+      } else {
         body = form
       }
 
@@ -159,7 +177,7 @@ export function useInitForm(opt = {}) {
         : opt.create(body)
       fun
         .then((res) => {
-          toast(drawerTitle.value + '公告成功')
+          toast(drawerTitle.value + '成功')
           // 修改就刷新当前页 新增刷新到第一页
           opt.getData(editId.value ? false : 1)
           formDrawerRef.value.close()

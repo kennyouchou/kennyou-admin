@@ -14,6 +14,7 @@
           </el-button>
         </template>
       </el-popconfirm>
+      <slot />
     </div>
     <!-- 刷新数据 -->
     <el-tooltip v-if="btns.includes('refresh')" effect="dark" content="刷新数据" placement="top">
