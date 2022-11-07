@@ -60,7 +60,8 @@ export function useInitTable(opt = {}) {
   // 删除管理员
   const handleDelete = (id) => {
     loading.value = true
-    opt.delete(id)
+    opt
+      .delete(id)
       .then((res) => {
         toast('删除成功')
         getData()
@@ -73,13 +74,38 @@ export function useInitTable(opt = {}) {
   // 修改管理员状态
   const handleStatusChange = (status, row) => {
     row.statusLoading = true
-    opt.updateStatus(row.id, status)
+    opt
+      .updateStatus(row.id, status)
       .then((res) => {
         toast('修改状态成功')
         row.status = status
       })
       .finally(() => {
         row.statusLoading = false
+      })
+  }
+
+  // 多选选中记录的ID数组
+  const multiSelectIds = ref([])
+  const handleSelectionChange = (e) => {
+    multiSelectIds.value = e.map((o) => o.id)
+  }
+
+  // 批量删除方法
+  const multipleTableRef = ref(null)
+  const handleMultiDelete = () => {
+    loading.value = true
+    opt.delete(multiSelectIds.value)
+      .then((res) => {
+        toast('删除成功')
+        // 清空选中
+        if (multipleTableRef.value) {
+          multipleTableRef.value.clearSelection()
+        }
+        getData()
+      })
+      .finally(() => {
+        loading.value = false
       })
   }
 
@@ -93,7 +119,11 @@ export function useInitTable(opt = {}) {
     limit,
     getData,
     handleDelete,
-    handleStatusChange
+    handleStatusChange,
+    handleSelectionChange,
+    multipleTableRef,
+    handleMultiDelete
+
   }
 }
 
@@ -114,9 +144,19 @@ export function useInitForm(opt = {}) {
     formRef.value.validate((valid) => {
       if (!valid) return
       formDrawerRef.value.showLoading()
+
+
+      // 让对象的每个值解构成新的对象传回去 最后返回对象给body 转为时间戳
+      let body = {}
+      if(opt.beforeSubmit && typeof opt.beforeSubmit == "function"){
+        body = opt.beforeSubmit({...form})
+      }else{
+        body = form
+      }
+
       const fun = editId.value
-        ? opt.update(editId.value, form)
-        : opt.create(form)
+        ? opt.update(editId.value, body)
+        : opt.create(body)
       fun
         .then((res) => {
           toast(drawerTitle.value + '公告成功')
