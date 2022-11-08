@@ -10,9 +10,7 @@
               {{ item.name }}
             </div>
             <div class="flex justify-center items-center p-2">
-
               <el-checkbox v-if="openChoose" v-model="item.checked" @change="handleChooseChange(item)" />
-              
               <el-button type="primary" size="small" text
               @click="handleEditName(item)">
                 重命名
@@ -31,8 +29,9 @@
       </el-row>
     </div>
     <div class="bottom">
-      <el-pagination background layout="prev,pager,next" :total="total" :current-page="currentPage" :page-size="limit"
-        @current-change="getData" />
+      <el-pagination background layout="prev,pager,next" 
+      :total="total" :current-page="currentPage" :page-size="limit"
+      @current-change="getData" />
     </div>
   </el-main>
   <el-drawer v-model="drawer" title="上传图片">
@@ -115,10 +114,14 @@ const handleUploadSuccess =() =>{
   getData(1)
 }
 
-defineProps({
+const props = defineProps({
   openChoose:{
     type:Boolean,
     default:false
+  },
+  limit:{
+    type:Number,
+    default:1
   }
 })
 
@@ -126,9 +129,9 @@ defineProps({
 const emit = defineEmits("[choose]")   // 通知父组件
 const checkedImage = computed(()=>list.value.filter(o=>o.checked))
 const handleChooseChange = (item) => {
-  if(item.checked && checkedImage.value.length > 1 ){
+  if(item.checked && checkedImage.value.length > props.limit ){
     item.checked = false
-    return toast("最多只能选一张","error")
+    return toast(`最多只能选${props.limit}张`,"error")
   }
   // 将值传到父组件
   emit("choose",checkedImage.value)

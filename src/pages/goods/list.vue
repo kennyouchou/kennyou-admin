@@ -69,8 +69,9 @@
             <div v-if="searchForm.tab != 'delete'">
               <el-button class="px-1" type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
               <el-button class="px-1" type="primary" size="small" text>商品规格</el-button>
-              <el-button class="px-1" type="primary" size="small" text>设置轮播图</el-button>
-              <el-button class="px-1" type="primary" size="small" text>商品详情</el-button>
+              <el-button class="px-1" :type="scope.row.goods_banner.length == 0 ? 'danger' : 'primary'" size="small" text @click="handleSetGoodsBanners(scope.row)" :loading="scope.row.bannersLoading">设置轮播图</el-button>
+              <el-button class="px-1" :type="!scope.row.content ? 'danger' : 'primary'" size="small" text @click="handleSetGoodsContent(scope.row)" :loading="scope.row.contentLoading">商品详情</el-button>
+
 
               <el-popconfirm title="是否要删除该商品？" confirmButtonText="确认" cancelButtonText="取消"
                 @confirm="handleDelete(scope.row.id)">
@@ -144,6 +145,8 @@
       </FormDrawer>
 
     </el-card>
+    <Banners ref="bannersRef" @reload-data="getData"/>
+    <Content ref="contentRef" @reload-data="getData"/>
   </div>
 </template>
 
@@ -152,12 +155,13 @@ import { ref } from "vue";
 import ListHeader from "@/components/ListHeader.vue";
 import FormDrawer from "@/components/FormDrawer.vue";
 import ChooseImage from "@/components/ChooseImage.vue"
-import { getGoodsList, updateGoodsStatus, createGoods, updateGoods, deleteGoods } from "@/api/goods"
+import { getGoodsList,updateGoodsStatus, createGoods,updateGoods,deleteGoods } from "@/api/goods"
 import { useInitTable ,useInitForm } from "@/composables/useCommon";
 import { getCategoryList } from "@/api/category";
 import Search from "@/components/Search.vue";
 import SearchItem from "@/components/SearchItem.vue";
-
+import Banners from "./Banners.vue";
+import Content from "./Content.vue";
 const roleList = ref([])
 
 const {
@@ -183,7 +187,8 @@ const {
   getList: getGoodsList,
   onGetListSuccess: (res) => {
     tableData.value = res.list.map((o) => {
-      o.statusLoading = false
+      o.bannersLoading = false
+      o.contentLoading = false
       return o
     })
     total.value = res.totalCount
@@ -246,6 +251,13 @@ const tabbars = [{
 // 获取商品分类
 const category_list = ref([])
 getCategoryList().then(res=>category_list.value = res)
+// 设置轮播图功能
+const bannersRef = ref(null)
+const handleSetGoodsBanners = (row)=>bannersRef.value.open(row)
+
+// 商品详情功能
+const contentRef = ref(null)
+const handleSetGoodsContent = (row)=>contentRef.value.open(row)
 
 
 </script>

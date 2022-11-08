@@ -1,14 +1,18 @@
 <template>
-  <div v-if="modelValue">
-    <el-image :src="modelValue" fit="cover" class="w-[100px] h-[100px]
-    rounded border m-2" >
-    </el-image>
-    
-  </div>
+    <div v-if="modelValue && preview">
+        <el-image v-if="typeof modelValue == 'string'" :src="modelValue" fit="cover" class="w-[100px] h-[100px] rounded border mr-2"></el-image>
+        <div v-else class="flex flex-wrap">
+            <div class="relative mx-1 mb-2 w-[100px] h-[100px]" v-for="(url,index) in modelValue" :key="index">
+                <el-icon class="absolute right-[5px] top-[5px] cursor-pointer bg-white rounded-full" style="z-index: 10;" @click="removeImage(url)"><CircleClose /></el-icon>
+                <el-image :src="url" fit="cover" class="w-[100px] h-[100px] rounded border mr-2"></el-image>
+            </div>
+        </div>
+    </div>
 
-  <div class="choose-image-btn" @click="open">
-      <el-icon :size="25"><Plus /></el-icon>
-  </div>
+    <div v-if="preview" class="choose-image-btn" @click="open">
+        <el-icon :size="25" class="text-gray-500"><Plus /></el-icon>
+    </div>
+
   <el-dialog
     title="选择图片"
     v-model="dialogVisible"
@@ -29,7 +33,7 @@
         <!-- 侧边 -->
         <ImageAside ref="ImageAsideRef" @change="handleAsideChange" />
         <!-- 主体区域 -->
-        <ImageMain openChoose ref="ImageMainRef" @choose="handleChoose" />
+        <ImageMain :limit="limit" openChoose ref="ImageMainRef" @choose="handleChoose" />
       </el-container>
     </el-container>
     <span></span>
@@ -45,15 +49,30 @@
 import { ref } from 'vue';
 import ImageAside from "@/components/ImageAside.vue";
 import ImageMain from "@/components/ImageMain.vue";
-const dialogVisible = ref(false)
 
+
+const dialogVisible = ref(false)
 // 图片列表选择框
-const open = () =>{
-  dialogVisible.value = true
+const callbackFunction = ref(null)
+const open = (callback = null)=>{
+    callbackFunction.value = callback
+    dialogVisible.value = true
 }
-const close = () =>{
-  dialogVisible.value = false
-}
+const close = ()=>dialogVisible.value = false
+
+
+const props = defineProps({
+    modelValue:[String,Array],
+    limit:{
+        type:Number,
+        default:1
+    },
+    // 只在富文本编辑器不显示加号图标
+    preview:{
+        type:Boolean,
+        default:true
+    }
+})
 
 const ImageAsideRef = ref(null)
 const handleOpenCreate = () =>ImageAsideRef.value.handleCreate()
@@ -66,9 +85,6 @@ const handleAsideChange = (image_class_id) =>{
 
 const handleOpenLoad = () => ImageMainRef.value.openUploadFile()
 
-const props = defineProps({
-  modelValue:[String,Array]
-})
 const emit = defineEmits(["update:modelValue"])
 
 let urls = []
@@ -77,13 +93,35 @@ const handleChoose = (e) =>{
   urls = e.map(o=>o.url)
 }
 
-// 选中图片确认后
-const submit = () =>{
-  if(urls.length){
-    emit("update:modelValue",urls[0])
-  }
-  close()
+// 选中图片确认后 
+const submit = ()=>{
+    let value = []
+    if(props.limit == 1){
+        value = urls[0]
+    } else {
+        value = props.preview ? [...props.modelValue,...urls] : [...urls]
+        if(value.length > props.limit){
+            let limit = props.preview ? (props.limit - props.modelValue.length) : props.limit
+            return toast("最多还能选择"+ limit + "张")
+        }
+    }
+    if(value && props.preview){
+        emit("update:modelValue",value)
+    }
+    if(!props.preview && typeof callbackFunction.value === "function"){
+        callbackFunction.value(value)
+    }
+    close()
 }
+
+
+const removeImage = (url)=> 
+emit("update:modelValue",props.modelValue.filter(u=> u != url))
+
+defineExpose({
+    open
+})
+
 </script>
 
 <style scoped>
