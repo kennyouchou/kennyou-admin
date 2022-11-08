@@ -49,40 +49,47 @@ export function setGoodsBanner(id,data){
   return axios.post(`/admin/goods/banners/${id}`,data)
 }
 
+// 修改商品规格
 export function updateGoodsSkus(id,data){
   return axios.post(`/admin/goods/updateskus/${id}`,data)
 }
 
-
+// 添加商品规格
 export function createGoodsSkusCard(data){
   return axios.post(`/admin/goods_skus_card`,data)
 }
 
-
+// 修改商品规格选项
 export function updateGoodsSkusCard(id,data){
   return axios.post(`/admin/goods_skus_card/${id}`,data)
 }
 
+// 删除商品规格选项
 export function deleteGoodsSkusCard(id){
   return axios.post(`/admin/goods_skus_card/${id}/delete`)
 }
 
+// 排序商品规格选项
 export function sortGoodsSkusCard(data){
   return axios.post(`/admin/goods_skus_card/sort`,data)
 }
 
+// 创建商品规格选项值
 export function createGoodsSkusCardValue(data){
   return axios.post(`/admin/goods_skus_card_value`,data)
 }
 
+// 修改商品规格选项值
 export function updateGoodsSkusCardValue(id,data){
   return axios.post(`/admin/goods_skus_card_value/${id}`,data)
 }
 
+// 删除规格选项的值
 export function deleteGoodsSkusCardValue(id){
   return axios.post(`/admin/goods_skus_card_value/${id}/delete`)
 }
 
+// 选择设置商品规格和选项
 export function chooseAndSetGoodsSkusCard(id,data){
   return axios.post(`/admin/goods_skus_card/${id}/set`,data)
 }
