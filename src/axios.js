@@ -24,11 +24,11 @@ service.interceptors.request.use(function (config) {
 // 添加响应拦截器
 service.interceptors.response.use(function (response) {
   // 对响应数据做点什么 这里拿token
-  return response.data.data;
+  return response.request.responseType == "blob" ? response.data : response.data.data;
 }, function (error) {
   // 对响应错误做点什么
   const msg = error.response.data.msg || '请求失败'
-  if(msg == "非法token，请先登录！"){
+  if(msg == "非法token,请先登录!"){
     store.dispatch("actionLogout").finally(()=>{
       location.reload()
     })

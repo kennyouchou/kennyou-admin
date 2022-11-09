@@ -87,3 +87,15 @@ export function cartesianProductOf() {
       []
   ]);
 }
+
+export function showModal(content = "提示内容",type = "warning",title = ""){
+  return ElMessageBox.confirm(
+      content,
+      title,
+      {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type,
+      }
+    )
+}
