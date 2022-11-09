@@ -143,6 +143,7 @@ export function useInitTable(opt = {}) {
     multipleTableRef,
     handleMultiDelete,
     handleMultiStatusChange,
+    multiSelectIds
   }
 }
 

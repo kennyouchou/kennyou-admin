@@ -39,6 +39,20 @@ export function deleteGoods(ids){
   })
 }
 
+// 恢复回收站商品
+export function restoreGoods(ids){
+  return axios.post(`/admin/goods/restore`,{
+    ids
+  })
+}
+
+// 彻底删除回收站商品
+export function destroyGoods(ids){
+  return axios.post(`/admin/goods/destroy`,{
+    ids
+  })
+}
+
 //  读取商品资料
 export function readGoods(id){
   return axios.get(`/admin/goods/read/${id}`)

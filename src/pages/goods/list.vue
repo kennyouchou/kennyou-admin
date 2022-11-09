@@ -23,10 +23,35 @@
     </Search>
 
     <!-- 头部的 新增 刷新功能 -->
-    <ListHeader layout="create,delete,refresh" @create="handleCreate" @refresh="getData" @delete="handleMultiDelete">
-        <el-button size="small" @click="handleMultiStatusChange(1)" v-if="searchForm.tab == 'all' || searchForm.tab == 'off'">上架</el-button>
-        <el-button size="small" @click="handleMultiStatusChange(0)" v-if="searchForm.tab == 'all' || searchForm.tab == 'saling'">下架</el-button>
-      </ListHeader>
+    <ListHeader layout="create,refresh" @create="handleCreate" @refresh="getData">
+      <el-button type="danger"  @click="handleMultiDelete" size="small"
+        v-if="searchForm.tab != 'delete' ">
+        批量删除</el-button>
+        <el-button type="warning"  @click="handleRestoreGoods" size="small"
+        v-else >
+        批量恢复商品</el-button> 
+      
+
+
+        <el-popconfirm v-if="searchForm.tab == 'delete' " title="是否要彻底删除该商品？" confirmButtonText="确认" cancelButtonText="取消"
+          @confirm="handleDestroyGoods">
+            <template #reference>
+              <el-button type="danger" 
+              size="small"
+               >
+              彻底删除商品
+              </el-button> 
+            </template>
+        </el-popconfirm>
+
+
+      <el-button size="small" @click="handleMultiStatusChange(1)" 
+        v-if="searchForm.tab == 'all' || searchForm.tab == 'off'">
+        上架</el-button>
+        <el-button size="small" @click="handleMultiStatusChange(0)" 
+        v-if="searchForm.tab == 'all' || searchForm.tab == 'saling'">
+        下架</el-button>
+    </ListHeader>
 
     <el-table ref="multipleTableRef" @selection-change="handleSelectionChange" :data="tableData" stripe style="width: 100%" v-loading="loading">
       <el-table-column type="selection" width="55" />
@@ -77,7 +102,7 @@
               <el-button class="px-1" :type="scope.row.goods_banner.length == 0 ? 'danger' : 'primary'" size="small" text @click="handleSetGoodsBanners(scope.row)" :loading="scope.row.bannersLoading">设置轮播图</el-button>
               <el-button class="px-1" :type="!scope.row.content ? 'danger' : 'primary'" size="small" text @click="handleSetGoodsContent(scope.row)" :loading="scope.row.contentLoading">商品详情</el-button>
               <el-popconfirm title="是否要删除该商品？" confirmButtonText="确认" cancelButtonText="取消"
-                @confirm="handleDelete(scope.row.id)">
+                @confirm="handleDelete([scope.row.id])">
                 <template #reference>
                   <el-button class="px-1" text type="primary" size="small">删除</el-button>
                 </template>
@@ -159,7 +184,7 @@ import { ref } from "vue";
 import ListHeader from "@/components/ListHeader.vue";
 import FormDrawer from "@/components/FormDrawer.vue";
 import ChooseImage from "@/components/ChooseImage.vue"
-import { getGoodsList,updateGoodsStatus, createGoods,updateGoods,deleteGoods } from "@/api/goods"
+import { getGoodsList,updateGoodsStatus, restoreGoods,destroyGoods,createGoods,updateGoods,deleteGoods } from "@/api/goods"
 import { useInitTable ,useInitForm } from "@/composables/useCommon";
 import { getCategoryList } from "@/api/category";
 import Search from "@/components/Search.vue";
@@ -167,6 +192,7 @@ import SearchItem from "@/components/SearchItem.vue";
 import Banners from "./Banners.vue";
 import Content from "./Content.vue";
 import Skus from "./Skus.vue";
+import { toast } from "@/composables/utils";
 const roleList = ref([])
 
 const {
@@ -182,7 +208,8 @@ const {
   limit,
   getData,
   handleDelete,
-  handleMultiStatusChange
+  handleMultiStatusChange,
+  multiSelectIds
 } = useInitTable({
   searchForm:{
     title:"",
@@ -268,6 +295,31 @@ const handleSetGoodsContent = (row)=>contentRef.value.open(row)
 // 设置商品规格
 const skusRef = ref(null)
 const handleSetGoodsSkus = (row)=>skusRef.value.open(row)
+
+// 恢复商品
+const handleRestoreGoods =()=>{
+  useMultiAction(restoreGoods,"恢复商品")
+}
+// 彻底删除商品
+const handleDestroyGoods =()=>{
+  useMultiAction(destroyGoods,"彻底删除")
+}
+
+function useMultiAction(func,msg) {
+  loading.value = true
+  func(multiSelectIds.value)
+  .then(res=>{
+    toast(msg + "成功")
+        // 清空选中
+        if (multipleTableRef.value) {
+          multipleTableRef.value.clearSelection()
+        }
+        getData()
+  })
+  .finally(()=>{
+
+  })
+}
 </script>
 
 <style scoped>
