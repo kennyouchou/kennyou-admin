@@ -22,10 +22,12 @@ export function exportOrder(query = {}){
     })
 }
 
+// 获取物流信息
 export function getShipInfo(id){
     return axios.get(`/admin/order/${id}/get_ship_info`)
 }
 
+// 同意退款
 export function refundOrder(id,data){
     return axios.post(`/admin/order/${id}/handle_refund`,data)
 }
