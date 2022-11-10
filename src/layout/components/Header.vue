@@ -120,7 +120,7 @@ function handleRefresh(){
 
 <style scoped>
 .header{
-  @apply flex items-center bg-indigo-700 text-light-50 fixed top-0 right-0 left-0;
+  @apply flex items-center bg-green-400 text-light-50 fixed top-0 right-0 left-0;
   height: 64px;
   z-index: 1000;
 }
@@ -137,7 +137,7 @@ function handleRefresh(){
   cursor: pointer;
 }
 .icon-btn:hover{
-  @apply bg-indigo-600;
+  @apply bg-red-400;
 }
 .header .dropdownmenu{
   height: 64px;
